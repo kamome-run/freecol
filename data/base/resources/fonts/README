@@ -2,3 +2,12 @@ List of external authors:
 
 ShadowedBlack.ttf	Paul Lloyd <Paul.Lloyd@uwa.edu.au>
 			Our contact: Stian Grenborgen <stiangre@ifi.uio.no>
+
+NotoSansJP-Regular.ttf	Noto Sans JP (Adobe / Google, (c) 2014-2021 Adobe,
+			with Reserved Font Name 'Source'), SIL Open Font
+			License 1.1, see NotoSansJP-OFL.txt.
+			Modified: the variable font was instantiated at
+			weight 400 (Regular) and subset to the characters
+			needed for the Japanese localisation (Latin, Greek,
+			Cyrillic, kana, punctuation, JIS X 0208 kanji).
+			Used for the "ja" locale, see ../../resources_ja.properties.
