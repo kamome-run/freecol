@@ -1842,6 +1842,16 @@ public class SwingGUI extends GUI {
         TilePopup tp = new TilePopup(getFreeColClient(), tile);
         if (tp.hasItem()) {
             Point point = this.mapViewer.getMapViewerBounds().calculateTilePosition(tile, true);
+            // Clamp so a long menu (e.g. many units on a tile) does not
+            // extend past the bottom/right edge of the canvas, which can
+            // otherwise leave it unreachable, especially in a maximized
+            // window.  The JDK's own popup-to-screen adjustment is not
+            // reliably triggered here.
+            final Dimension popupSize = tp.getPreferredSize();
+            final int maxX = this.canvas.getWidth() - popupSize.width;
+            final int maxY = this.canvas.getHeight() - popupSize.height;
+            if (maxX >= 0 && point.x > maxX) point.x = maxX;
+            if (maxY >= 0 && point.y > maxY) point.y = maxY;
             tp.show(this.canvas, point.x, point.y);
             tp.repaint();
         }
