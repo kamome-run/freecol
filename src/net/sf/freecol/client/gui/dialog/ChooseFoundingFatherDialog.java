@@ -19,17 +19,20 @@
 
 package net.sf.freecol.client.gui.dialog;
 
+import java.awt.Dimension;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import net.miginfocom.swing.MigLayout;
 import net.sf.freecol.client.FreeColClient;
 import net.sf.freecol.client.gui.ChoiceItem;
+import net.sf.freecol.client.gui.ImageLibrary;
 import net.sf.freecol.client.gui.panel.MigPanel;
 import net.sf.freecol.client.gui.panel.Utility;
 import net.sf.freecol.client.gui.panel.colopedia.ColopediaPanel;
@@ -77,13 +80,30 @@ public final class ChooseFoundingFatherDialog
             .getFreeColAction("colopediaAction.fathers"));
         helpButton.setText(Messages.message("help"));
 
+        // Fix the detail panel width up front (as JTextArea's own
+        // preferred-size estimate, based on a fixed column count, does
+        // not reliably predict the width needed for wrapped CJK text,
+        // e.g. Japanese) so that MigLayout reflows the description
+        // text to fit instead of letting it overflow the dialog.  Any
+        // remaining overflow (e.g. from an unusually long biography)
+        // is still reachable via the scroll pane below.
+        final ImageLibrary lib = getImageLibrary();
+        final int detailWidth = lib.scaleInt(360);
+        final int detailHeight = lib.scaleInt(400);
+
         FatherDetailPanel details = new FatherDetailPanel(freeColClient,
             new ColopediaPanel(freeColClient));
         for (FoundingFather father : possibleFoundingFathers) {
             JPanel jp = new MigPanel(new MigLayout());
             details.buildDetail(father, jp);
+            jp.setSize(new Dimension(detailWidth, 1));
             jp.validate();
-            tb.addTab(Messages.message(father.getTypeKey()), jp);
+            JScrollPane sp = new JScrollPane(jp,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            sp.setBorder(null);
+            sp.setPreferredSize(new Dimension(detailWidth, detailHeight));
+            tb.addTab(Messages.message(father.getTypeKey()), sp);
         }
         tb.setSelectedIndex(0);
 
@@ -91,7 +111,7 @@ public final class ChooseFoundingFatherDialog
         panel.add(Utility.localizedHeader("chooseFoundingFatherDialog.title",
                                           Utility.FONTSPEC_TITLE));
         panel.add(helpButton, "tag help");
-        panel.add(tb, "width 100%, height 400!");
+        panel.add(tb, "width " + detailWidth + "!, height " + detailHeight + "!");
 
         List<ChoiceItem<FoundingFather>> c = choices();
         c.add(new ChoiceItem<>(Messages.message("ok"), (FoundingFather)null)
