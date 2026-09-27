@@ -140,11 +140,16 @@ public class StringUtils {
      * Find a breaking point in a line between two words.  The
      * breaking point is as close to the center as possible.
      *
+     * In addition to the ASCII space, this also considers common
+     * CJK punctuation (e.g. the Japanese comma "、" and full stop
+     * "。") as delimiters, as CJK text is often written without
+     * spaces between words.
+     *
      * @param string The line for which we should determine a breaking point.
      * @return The best breaking point or negative if none found.
      */
     public static int getBreakingPoint(String string) {
-        return getBreakingPoint(string, " ");
+        return getBreakingPoint(string, " 　、。・");
     }
 
     /**
