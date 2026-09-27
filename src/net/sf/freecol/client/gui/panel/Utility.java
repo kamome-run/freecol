@@ -158,6 +158,18 @@ public final class Utility {
         return ImageLibrary.getColor("color.warning.LookAndFeel", Color.RED);
     }
 
+    /**
+     * Get the color to use for de-emphasized (disabled/ignored) text
+     * that still needs to stay legible, e.g. against a light
+     * parchment background.
+     *
+     * @return The disabled text {@code Color}.
+     */
+    public static Color getDisabledTextColor() {
+        return ImageLibrary.getColor("color.disabledMenu.LookAndFeel",
+                                     Color.DARK_GRAY);
+    }
+
     // Borders that depend on Resources
     
     public static synchronized Border getColorCellBorder() {
@@ -376,6 +388,14 @@ public final class Utility {
         textPane.setOpaque(false);
         textPane.setEditable(false);
         textPane.setLogicalStyle(STYLE_CONTEXT.getStyle("regular"));
+        // The look and feel's default disabled-text color
+        // (TextPane.inactiveForeground, derived from the "disabled
+        // control" theme color) barely contrasts with the light
+        // report/parchment backgrounds this is used on, making a
+        // muted/ignored message unreadable instead of merely
+        // de-emphasized.  Use the darker color already used for
+        // disabled menu text instead.
+        textPane.setDisabledTextColor(getDisabledTextColor());
         return textPane;
     }
 
