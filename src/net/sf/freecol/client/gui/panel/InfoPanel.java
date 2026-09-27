@@ -25,6 +25,7 @@ import static net.sf.freecol.common.util.StringUtils.splitText;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.LayoutManager;
@@ -424,10 +425,23 @@ public final class InfoPanel extends FreeColPanel
         panel.add(new JLabel(ii), "spany, center");
         String text = unit.getDescription(Unit.UnitLabelType.FULL);
         JLabel textLabel;
-        for (String s : splitText(text, " /", getFontMetrics(this.font),
-                                  panel.getWidth() - width)) {
+        // Keep the label on one line if a slightly smaller font (down to
+        // 80%) makes it fit, and leave a margin, as wide glyphs (e.g. CJK)
+        // can render wider than their font metrics and lose the closing
+        // bracket.  Otherwise split it into lines as before.
+        final int textWidth = panel.getWidth() - width;
+        final float minSize = this.font.getSize2D() * 0.8f;
+        Font labelFont = this.font;
+        FontMetrics fm = getFontMetrics(labelFont);
+        while (fm.stringWidth(text) + fm.getHeight() / 2 > textWidth
+            && labelFont.getSize2D() - 0.5f >= minSize) {
+            labelFont = labelFont.deriveFont(labelFont.getSize2D() - 0.5f);
+            fm = getFontMetrics(labelFont);
+        }
+        for (String s : splitText(text, " /", fm,
+                                  textWidth - fm.getHeight() / 2)) {
             textLabel = new JLabel(s);
-            textLabel.setFont(this.font);
+            textLabel.setFont(labelFont);
             panel.add(textLabel);
         }
         
